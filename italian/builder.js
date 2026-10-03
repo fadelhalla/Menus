@@ -74,9 +74,9 @@ window.RESTAURANT.builder = (host, api) => {
         <div class="bld-plate">
           <svg class="steam" viewBox="0 0 120 60" aria-hidden="true"><path d="M30 58c-8-12 8-18 0-30s8-18 0-28"/><path d="M60 58c-8-12 8-18 0-30s8-18 0-28"/><path d="M90 58c-8-12 8-18 0-30s8-18 0-28"/></svg>
           <svg class="bld-svg" viewBox="0 0 240 240" role="img" aria-labelledby="bld-summary">
-            <circle cx="120" cy="120" r="116" style="fill:var(--plate);stroke:var(--brand)" stroke-width="2"/>
-            <circle cx="120" cy="120" r="104" fill="none" style="stroke:var(--brand)" stroke-width="7" stroke-dasharray="1.5 9.5"/>
-            <circle cx="120" cy="120" r="96" fill="none" style="stroke:var(--brand)" stroke-width="1.5"/>
+            <circle cx="120" cy="120" r="116" style="fill:var(--plate);stroke:var(--ring)" stroke-width="2"/>
+            <circle cx="120" cy="120" r="104" fill="none" style="stroke:var(--ring)" stroke-width="7" stroke-dasharray="1.5 9.5"/>
+            <circle cx="120" cy="120" r="96" fill="none" style="stroke:var(--ring)" stroke-width="1.5"/>
             <circle cx="120" cy="120" r="88" fill="none" style="stroke:var(--line)" stroke-width="1"/>
             <g class="sauce"><circle cx="120" cy="120" r="76"/><circle cx="74" cy="104" r="20"/><circle cx="160" cy="150" r="22"/><circle cx="150" cy="80" r="16"/></g>
             <g class="pasta"></g><g class="extras"></g><g class="garnish"></g><g class="finish"></g>

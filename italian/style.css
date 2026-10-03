@@ -1,81 +1,128 @@
-/* Mattarello: Amalfi majolica. Cobalt-glazed band, porcelain ground, lemon accent,
-   Bodoni (from Parma) for names and headings. */
+/* Mattarello: three house styles, switched with data-skin on <html>.
+   Each is a deliberate single look (it does not follow the device's dark mode).
+     dolce  La Dolce Vita: Riviera 1960s, Vespa mint, Campari red, striped beach awning.
+     nonna  Da Nonna: trattoria red gingham tablecloth, basil green, handwritten menu card.
+     notte  Notte: candlelit wine bar, dark wood, cream type, gold. */
 :root {
-  --bg: #F6F7FB;
+  --bg: #F1F8F4;
   --surface: #FFFFFF;
-  --ink: #13204A;
-  --muted: #59648A;
-  --line: #DDE2EF;
-  --brand: #1E3C9E;
-  --brand-ink: #FFFFFF;
-  --accent: #F3C433;
-  --accent-ink: #13204A;
-  --good: #2F7D4A;
-  --veg: #2F7A3D;
-  --hot: #C23A28;
+  --ink: #17252A;
+  --muted: #536668;
+  --line: #D3E6DD;
+  --brand: #8ED1BC;
+  --brand-ink: #17252A;
+  --accent: #E8503F;
+  --accent-ink: #FFFFFF;
+  --good: #1F7A55;
+  --veg: #1F7A55;
+  --hot: #C9392A;
   --plate: #FFFFFF;
-  --pasta: #F0CB6A;
+  --ring: #E8503F;
+  --orbit: #17252A;
+  --pasta: #F2C65E;
   --pasta-edge: #B98A2E;
-  --tile-bg: #E9EEFB;
-  --tile-ink: #1E3C9E;
-  --f-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --radius: 18px;
+  --tile-bg: #FFE4DD;
+  --tile-ink: #B9342A;
+  --f-display: "Shrikhand", "Cooper Black", Georgia, serif;
+  --f-body: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --radius: 20px;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0B1230; --surface: #131C45; --ink: #EDF0FA; --muted: #A2ABCB; --line: #263063;
-    --brand: #1A3590; --brand-ink: #FFFFFF; --accent: #F5CB45; --accent-ink: #0B1230;
-    --good: #5CC27A; --veg: #72C27F; --hot: #FF7A62;
-    --plate: #EEF1FA; --tile-bg: #1A2558; --tile-ink: #A9BBFF;
-    color-scheme: dark;
-  }
+:root[data-skin="nonna"] {
+  --bg: #FFFCFA; --surface: #FFFFFF; --ink: #2A1A16; --muted: #6F5A52; --line: #F0DDD7;
+  --brand: #C8102E; --brand-ink: #FFFFFF; --accent: #2F7D32; --accent-ink: #FFFFFF;
+  --good: #2F7D32; --veg: #2F7D32; --hot: #C8102E;
+  --plate: #FFFFFF; --ring: #C8102E; --orbit: #6E0A1A;
+  --tile-bg: #FDEDEC; --tile-ink: #B00E28;
+  --f-display: "Caveat Brush", "Segoe Print", "Bradley Hand", cursive;
+  --f-body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 10px;
+  color-scheme: light;
 }
-:root[data-theme="dark"] {
-  --bg: #0B1230; --surface: #131C45; --ink: #EDF0FA; --muted: #A2ABCB; --line: #263063;
-  --brand: #1A3590; --brand-ink: #FFFFFF; --accent: #F5CB45; --accent-ink: #0B1230;
-  --good: #5CC27A; --veg: #72C27F; --hot: #FF7A62;
-  --plate: #EEF1FA; --tile-bg: #1A2558; --tile-ink: #A9BBFF;
+:root[data-skin="notte"] {
+  --bg: #120B0A; --surface: #1D1412; --ink: #F2E6D4; --muted: #B29C84; --line: #3A2B26;
+  --brand: #0D0807; --brand-ink: #F2E6D4; --accent: #E0AE4C; --accent-ink: #120B0A;
+  --good: #8CC78A; --veg: #A3CF8C; --hot: #FF8A6B;
+  --plate: #F4EDE2; --ring: #B8892F; --orbit: #E0AE4C; --pasta-edge: #A77A26;
+  --tile-bg: #2A1D19; --tile-ink: #E0AE4C;
+  --f-display: "Italiana", "Didot", Georgia, serif;
+  --f-body: "Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 4px;
   color-scheme: dark;
 }
+body { transition: background-color .4s ease, color .4s ease; }
 
-/* ---------- type ---------- */
-.logo { font-family: var(--f-display); font-style: italic; font-weight: 600; font-size: 30px; letter-spacing: 0; }
-.logo small { font-style: normal; letter-spacing: .18em; font-size: 11px; }
-.hero h2 { font-weight: 500; font-size: clamp(36px, 7.4vw, 66px); line-height: 1; letter-spacing: -.01em; max-width: 13ch; }
-.hero h2 em { font-style: italic; color: var(--accent); }
-.hero p { opacity: .92; font-weight: 400; }
+/* ---------- shared type ---------- */
+.logo { font-family: var(--f-display); font-weight: 400; font-size: 30px; }
+.logo small { letter-spacing: .18em; font-size: 11px; }
+.hero h2 { font-weight: 400; font-size: clamp(36px, 7.4vw, 64px); line-height: 1.02; max-width: 13ch; }
+.hero h2 em { font-style: normal; color: var(--accent); }
+.hero p { font-weight: 400; }
 .facts { gap: 4px 16px; }
 .section { padding-top: 34px; }
-.section h3 { font-weight: 600; font-size: clamp(30px, 5vw, 40px); letter-spacing: -.01em; }
+.section h3 { font-weight: 400; font-size: clamp(32px, 5vw, 42px); line-height: 1.05; }
 .kicker { color: var(--tile-ink); }
-.card h4 { font-family: var(--f-display); font-weight: 600; font-size: 19px; line-height: 1.15; }
-.sheet-head h2 { font-weight: 600; font-size: 26px; }
-.ticket .big { font-family: var(--f-display); font-weight: 700; }
-.cat[aria-current="true"] { background: var(--brand); color: var(--brand-ink); }
-.filter[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
-
-/* Ceramic tiles: a glazed square with majolica corner marks. */
-.tile {
-  background:
-    radial-gradient(circle at 0 0, color-mix(in srgb, var(--tile-ink) 22%, transparent) 0 14px, transparent 15px),
-    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--tile-ink) 22%, transparent) 0 14px, transparent 15px),
-    var(--tile-bg);
-  color: var(--tile-ink);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tile-ink) 18%, transparent);
-}
-.card:hover .tile svg { transform: rotate(-8deg) scale(1.06); }
+.card h4 { font-weight: 700; font-size: 17px; }
+.sheet-head h2 { font-weight: 400; font-size: 28px; }
+.ticket .big { font-family: var(--f-display); font-weight: 400; }
+.tile { background: var(--tile-bg); color: var(--tile-ink); }
 .tile svg { transition: transform .35s cubic-bezier(.3, 1.4, .6, 1); }
-.add { background: var(--brand); color: var(--brand-ink); }
+.card:hover .tile svg { transform: rotate(-8deg) scale(1.06); }
+
+/* ---------- La Dolce Vita ---------- */
+:root:not([data-skin="nonna"]):not([data-skin="notte"]) .hero { position: relative; padding-top: 58px; }
+:root:not([data-skin="nonna"]):not([data-skin="notte"]) .hero::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 38px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 30px, var(--surface) 30px 60px);
+  -webkit-mask: radial-gradient(circle 15px at 15px 20px, #000 96%, transparent) 0 0 / 30px 38px repeat-x, linear-gradient(#000 0 0) 0 0 / 100% 20px no-repeat;
+          mask: radial-gradient(circle 15px at 15px 20px, #000 96%, transparent) 0 0 / 30px 38px repeat-x, linear-gradient(#000 0 0) 0 0 / 100% 20px no-repeat;
+}
+:root:not([data-skin="nonna"]):not([data-skin="notte"]) .hero-art::before {
+  content: ""; position: absolute; width: min(66vw, 250px); aspect-ratio: 1; border-radius: 50%;
+  background: #FFE08A; opacity: .7; z-index: 0;
+}
+
+/* ---------- Da Nonna ---------- */
+:root[data-skin="nonna"] .logo { font-size: 36px; }
+:root[data-skin="nonna"] .hero {
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(90deg, rgba(200, 16, 46, .5) 50%, transparent 0),
+    linear-gradient(rgba(200, 16, 46, .5) 50%, transparent 0);
+  background-size: 36px 36px;
+  padding-block: 26px 30px;
+}
+:root[data-skin="nonna"] .hero-copy {
+  background: var(--surface); color: var(--ink); padding: 22px 22px 18px; border-radius: 4px;
+  box-shadow: 0 14px 30px -12px rgba(60, 10, 10, .45); transform: rotate(-1.2deg); max-width: 560px;
+}
+:root[data-skin="nonna"] .hero h2 { font-size: clamp(40px, 8vw, 66px); line-height: .95; }
+:root[data-skin="nonna"] .hero h2 em { color: var(--brand); }
+:root[data-skin="nonna"] .section h3 { font-size: clamp(36px, 6vw, 48px); color: var(--brand); }
+:root[data-skin="nonna"] .hero-art .hplate { background: var(--surface); border-radius: 50%; box-shadow: 0 14px 30px -12px rgba(60, 10, 10, .45); }
+
+/* ---------- Notte ---------- */
+:root[data-skin="notte"] .top { border-bottom: 1px solid var(--line); }
+:root[data-skin="notte"] .logo { font-size: 30px; letter-spacing: .12em; text-transform: uppercase; }
+:root[data-skin="notte"] .hero {
+  background: radial-gradient(circle at 78% 45%, rgba(224, 174, 76, .24), transparent 52%), var(--brand);
+  border-bottom: 1px solid var(--line);
+}
+:root[data-skin="notte"] .hero h2 { font-size: clamp(40px, 8vw, 70px); }
+:root[data-skin="notte"] .section h3 { letter-spacing: .02em; }
+:root[data-skin="notte"] .card h4 { font-weight: 500; font-size: 14.5px; letter-spacing: .08em; text-transform: uppercase; }
+:root[data-skin="notte"] .tile { box-shadow: inset 0 0 0 1px rgba(224, 174, 76, .35); }
 
 /* ---------- hero plate ---------- */
 .hero-art { display: grid; place-items: center; padding-block: 8px 4px; }
-.hplate { width: min(56vw, 210px); height: auto; overflow: visible; }
-@media (min-width: 820px) { .hplate { width: min(100%, 360px); } }
+.hplate { position: relative; z-index: 1; width: min(56vw, 210px); height: auto; overflow: visible; }
+@media (min-width: 820px) {
+  .hplate { width: min(100%, 360px); }
+  :root:not([data-skin="nonna"]):not([data-skin="notte"]) .hero-art::before { width: min(100%, 420px); }
+}
 .hplate .orbit { transform-box: view-box; transform-origin: center; animation: spin 80s linear infinite; }
-.hplate .orbit g { color: var(--brand-ink); opacity: .85; }
+.hplate .orbit g { color: var(--orbit); opacity: .85; }
 .hplate .twirl path { stroke: var(--pasta); animation: draw 2.6s .2s cubic-bezier(.55, 0, .25, 1) backwards; }
 .hplate .twirl path:nth-child(2) { animation-delay: .45s; }
 .hplate .twirl path:nth-child(3) { animation-delay: .7s; }
@@ -85,7 +132,7 @@
 /* ---------- builder ---------- */
 .bld {
   display: grid; gap: 22px; grid-template-columns: 1fr;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); padding: 18px;
 }
 @media (min-width: 880px) {
   .bld { grid-template-columns: minmax(300px, .85fr) 1.15fr; gap: 36px; padding: 28px; }
@@ -93,7 +140,7 @@
 }
 .bld-stage { display: grid; justify-items: center; gap: 10px; text-align: center; min-width: 0; }
 .bld-plate { position: relative; width: min(100%, 330px); transition: transform .25s ease-out; padding-top: 22px; }
-.bld-svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 18px 22px rgba(10, 20, 60, .22)); }
+.bld-svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 16px 20px rgba(20, 10, 5, .22)); }
 .bld-svg .sauce { transition: fill .6s ease; }
 .bld-svg .pop, .bld-svg .drop, .bld-svg .finish { transform-box: fill-box; transform-origin: center; }
 .steam { position: absolute; left: 50%; top: 0; width: 40%; transform: translateX(-50%); fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; overflow: visible; }
@@ -102,7 +149,7 @@
 .steam path:nth-child(3) { animation-delay: 2.2s; }
 @keyframes steam { 0% { opacity: 0; transform: translateY(12px); } 45% { opacity: .45; } 100% { opacity: 0; transform: translateY(-16px); } }
 .bld-match { margin: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13.5px; padding: 6px 12px; border-radius: 999px; }
-.bld-summary { margin: 0; font-family: var(--f-display); font-style: italic; font-size: 19px; line-height: 1.3; max-width: 32ch; text-wrap: balance; }
+.bld-summary { margin: 0; font-weight: 600; font-size: 16.5px; line-height: 1.35; max-width: 34ch; text-wrap: balance; }
 .bld-diet { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; min-height: 22px; }
 
 .bld-panel { display: grid; gap: 16px; min-width: 0; align-content: start; }
@@ -114,14 +161,14 @@
 .bld-tab .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 700 12px/1 var(--f-mono); border: 1.5px solid currentColor; }
 .bld-tab .t { display: grid; min-width: 0; font-weight: 700; font-size: 14px; line-height: 1.2; }
 .bld-tab small { font-weight: 500; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bld-tab.done .n { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
-.bld-tab[aria-selected="true"] { border-color: var(--brand); box-shadow: inset 0 0 0 1.5px var(--brand); background: var(--tile-bg); }
+.bld-tab.done .n { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.bld-tab[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); background: var(--tile-bg); }
 @media (max-width: 520px) {
   .bld-tab { flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 8px 4px; }
   .bld-tab .t { justify-items: center; font-size: 13px; }
   .bld-tab small { max-width: 100%; }
 }
-.bld-q { margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--f-display); font-size: 22px; font-weight: 600; }
+.bld-q { margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--f-display); font-size: 24px; font-weight: 400; }
 .bld-q .hint { font-family: var(--f-body); }
 .bld-chips { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); margin-top: 10px; }
 .bld-chip {
@@ -129,10 +176,10 @@
   border: 1px solid var(--line); background: var(--bg); border-radius: 14px; padding: 10px;
   transition: transform .12s ease, border-color .15s ease, background .15s ease;
 }
-.bld-chip:hover:not(:disabled) { border-color: var(--brand); }
+.bld-chip:hover:not(:disabled) { border-color: var(--accent); }
 .bld-chip:active:not(:disabled) { transform: scale(.97); }
 .bld-chip:disabled { opacity: .45; cursor: not-allowed; }
-.bld-chip[aria-pressed="true"] { border-color: var(--brand); box-shadow: inset 0 0 0 1.5px var(--brand); background: var(--tile-bg); }
+.bld-chip[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); background: var(--tile-bg); }
 .bld-chip .art { flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--tile-bg); color: var(--tile-ink); display: grid; place-items: center; }
 .bld-chip[aria-pressed="true"] .art { background: var(--surface); }
 .bld-chip .art svg { width: 82%; height: 82%; }

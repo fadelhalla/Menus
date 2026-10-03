@@ -123,6 +123,7 @@
     <header class="top">
       <div class="wrap">
         <h1 class="logo">${esc(R.name)}<small>${esc(R.kicker || '')}</small></h1>
+        ${R.skins ? '<button class="skin-btn" id="skin-btn" type="button" aria-label="Change the restaurant style"></button>' : ''}
         <button class="mode-btn" id="mode-btn" type="button"></button>
       </div>
     </header>
@@ -161,9 +162,10 @@
     <dialog class="sheet" id="sheet-cart" aria-labelledby="cart-title"></dialog>
     <dialog class="sheet" id="sheet-checkout" aria-labelledby="co-title"></dialog>
     <dialog class="sheet" id="sheet-done" aria-labelledby="done-title"></dialog>
+    <dialog class="sheet" id="sheet-skin" aria-labelledby="skin-title"></dialog>
   `;
 
-  const sheets = Object.fromEntries(['mode', 'item', 'cart', 'checkout', 'done'].map((k) => [k, $(`#sheet-${k}`)]));
+  const sheets = Object.fromEntries(['mode', 'item', 'cart', 'checkout', 'done', 'skin'].map((k) => [k, $(`#sheet-${k}`)]));
   Object.values(sheets).forEach((d) => {
     d.addEventListener('click', (e) => { if (e.target === d && (d !== sheets.mode || state.mode)) d.close(); }); // backdrop tap
   });
@@ -205,6 +207,39 @@
       toast(`Bill requested: ${money(sum)}. A server will bring it over.`);
     }
   });
+
+  // ---------- style picker (optional: RESTAURANT.skins) ----------
+  function applySkin(id) {
+    const skin = R.skins.find((x) => x.id === id) || R.skins[0];
+    document.documentElement.dataset.skin = skin.id;
+    store.set('skin', skin.id);
+    const b = $('#skin-btn');
+    skin.colors.forEach((c, i) => b.style.setProperty(`--c${i + 1}`, c));
+    return skin;
+  }
+  if (R.skins) {
+    applySkin(store.get('skin', R.defaultSkin || R.skins[0].id));
+    $('#skin-btn').addEventListener('click', () => {
+      const cur = document.documentElement.dataset.skin;
+      sheets.skin.innerHTML = `
+        <div class="sheet-head"><h2 id="skin-title">Choose a style</h2><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+        <div class="sheet-body"><div class="skins">${R.skins.map((k) => `
+          <button type="button" class="skin-opt" data-skin="${esc(k.id)}" aria-pressed="${k.id === cur}">
+            <span class="skin-strip">${k.colors.map((c) => `<i style="background:${esc(c)}"></i>`).join('')}</span>
+            <span class="skin-txt"><b>${esc(k.name)}</b><small>${esc(k.about)}</small></span>
+          </button>`).join('')}</div></div>`;
+      open('skin');
+    });
+    sheets.skin.addEventListener('click', (e) => {
+      if (e.target.closest('[data-close]')) return sheets.skin.close();
+      const o = e.target.closest('[data-skin]');
+      if (!o) return;
+      const skin = applySkin(o.dataset.skin);
+      $$('[data-skin]', sheets.skin).forEach((x) => x.setAttribute('aria-pressed', x === o));
+      toast(`Style: ${skin.name}`);
+      setTimeout(() => sheets.skin.close(), 350);
+    });
+  }
 
   // ---------- mode chooser ----------
   function renderModeSheet(force) {
@@ -337,23 +372,41 @@
     });
   }
 
-  let observer;
-  function observeSections() {
-    observer?.disconnect();
-    observer = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        const id = en.target.dataset.sec;
-        $$('.cat').forEach((b) => b.setAttribute('aria-current', b.dataset.cat === id));
-        $(`.cat[data-cat="${id}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-      });
-    }, { rootMargin: '-140px 0px -65% 0px' });
-    $$('.section').forEach((s) => observer.observe(s));
+  // Highlight the section in view. This only ever scrolls the category strip
+  // sideways (never the page), so it can't interrupt the guest's own scrolling.
+  let spyLock = 0;
+  function currentSection() {
+    const navBottom = $('.nav').getBoundingClientRect().bottom;
+    let id = null;
+    for (const sec of $$('.section')) {
+      if (sec.getBoundingClientRect().top - navBottom <= 24) id = sec.dataset.sec; else break;
+    }
+    const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+    return atEnd ? $$('.section').at(-1)?.dataset.sec : id || $('.section')?.dataset.sec;
   }
+  function setCurrent(id) {
+    const cats = $('#cats');
+    const btn = $(`.cat[data-cat="${CSS.escape(id || '')}"]`);
+    if (!btn || btn.getAttribute('aria-current') === 'true') return;
+    $$('.cat').forEach((b) => b.setAttribute('aria-current', b === btn));
+    cats.scrollTo({ left: btn.offsetLeft - (cats.clientWidth - btn.offsetWidth) / 2, behavior: 'smooth' });
+  }
+  let spyFrame = 0;
+  addEventListener('scroll', () => {
+    if (spyFrame) return;
+    spyFrame = requestAnimationFrame(() => { spyFrame = 0; if (Date.now() > spyLock) setCurrent(currentSection()); });
+  }, { passive: true });
+  function observeSections() { setCurrent(currentSection()); }
 
   $('#cats').addEventListener('click', (e) => {
     const b = e.target.closest('[data-cat]');
-    if (b) $(`#sec-${b.dataset.cat}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!b) return;
+    const sec = $(`#sec-${CSS.escape(b.dataset.cat)}`);
+    if (!sec) return;
+    setCurrent(b.dataset.cat);
+    spyLock = Date.now() + 900; // keep the tapped chip lit while the page glides there
+    const top = sec.getBoundingClientRect().top + scrollY - $('.nav').offsetHeight - 8;
+    scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   });
   $('#q').addEventListener('input', (e) => { state.query = e.target.value.trim(); renderMenu(); });
   $$('.filter').forEach((b) => b.addEventListener('click', () => {

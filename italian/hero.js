@@ -23,8 +23,8 @@
     <svg class="hplate" viewBox="-10 -10 340 340">
       <g class="orbit">${orbit}</g>
       <circle cx="${C}" cy="${C}" r="112" style="fill:var(--plate)"/>
-      <circle cx="${C}" cy="${C}" r="102" fill="none" style="stroke:var(--brand)" stroke-width="8" stroke-dasharray="1.5 10.5"/>
-      <circle cx="${C}" cy="${C}" r="93" fill="none" style="stroke:var(--brand)" stroke-width="1.5"/>
+      <circle cx="${C}" cy="${C}" r="102" fill="none" style="stroke:var(--ring)" stroke-width="8" stroke-dasharray="1.5 10.5"/>
+      <circle cx="${C}" cy="${C}" r="93" fill="none" style="stroke:var(--ring)" stroke-width="1.5"/>
       <g class="twirl" fill="none" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
         ${strand(0, 2.5)}${strand(2.1, 3.2)}${strand(4.2, 2)}
       </g>
