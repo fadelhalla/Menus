@@ -875,13 +875,12 @@ window.RESTAURANT = {
   function applySkin(id) {
     const skin = R.skins.find((x) => x.id === id) || R.skins[0];
     document.documentElement.dataset.skin = skin.id;
-    store.set('skin', skin.id);
     const b = $('#skin-btn');
     skin.colors.forEach((c, i) => b.style.setProperty(`--c${i + 1}`, c));
     return skin;
   }
   if (R.skins) {
-    applySkin(store.get('skin', R.defaultSkin || R.skins[0].id));
+    applySkin(R.defaultSkin || R.skins[0].id); // every visit opens in the house style
     $('#skin-btn').addEventListener('click', () => {
       const cur = document.documentElement.dataset.skin;
       sheets.skin.innerHTML = `
