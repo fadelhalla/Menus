@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="only light">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Brick & Bun smash burger menu">
 <title>Brick &amp; Bun</title>
@@ -27,21 +28,7 @@
       --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
       --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
       --radius: 18px;
-      color-scheme: light;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --bg: #16120E; --surface: #211B15; --ink: #F6EFE4; --muted: #B3A592; --line: #3A3027;
-        --brand: #F5B82E; --brand-ink: #1C1712; --accent: #F0503C; --accent-ink: #FFFFFF;
-        --good: #5BBE6E; --veg: #7CC46A; --hot: #FF6E57;
-        color-scheme: dark;
-      }
-    }
-    :root[data-theme="dark"] {
-      --bg: #16120E; --surface: #211B15; --ink: #F6EFE4; --muted: #B3A592; --line: #3A3027;
-      --brand: #F5B82E; --brand-ink: #1C1712; --accent: #F0503C; --accent-ink: #FFFFFF;
-      --good: #5BBE6E; --veg: #7CC46A; --hot: #FF6E57;
-      color-scheme: dark;
+      color-scheme: only light; /* never let the browser auto-darken the menu */
     }
   </style>
 <style>/* Menu engine styles. Each restaurant page defines the theme tokens

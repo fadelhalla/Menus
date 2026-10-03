@@ -1,5 +1,6 @@
 /* Mattarello: three house styles, switched with data-skin on <html>.
-   Each is a deliberate single look (it does not follow the device's dark mode).
+   Each is a deliberate single look. `only` stops browsers (e.g. Samsung Internet's
+   dark mode) from auto-darkening it.
      dolce  La Dolce Vita: Riviera 1960s, Vespa mint, Campari red, striped beach awning.
      nonna  Da Nonna: trattoria red gingham tablecloth, basil green, handwritten menu card.
      notte  Notte: candlelit wine bar, dark wood, cream type, gold. */
@@ -27,7 +28,7 @@
   --f-body: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --radius: 20px;
-  color-scheme: light;
+  color-scheme: only light;
 }
 :root[data-skin="nonna"] {
   --bg: #FFFCFA; --surface: #FFFFFF; --ink: #2A1A16; --muted: #6F5A52; --line: #F0DDD7;
@@ -38,7 +39,7 @@
   --f-display: "Caveat Brush", "Segoe Print", "Bradley Hand", cursive;
   --f-body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius: 10px;
-  color-scheme: light;
+  color-scheme: only light;
 }
 :root[data-skin="notte"] {
   --bg: #120B0A; --surface: #1D1412; --ink: #F2E6D4; --muted: #B29C84; --line: #3A2B26;
@@ -49,7 +50,7 @@
   --f-display: "Italiana", "Didot", Georgia, serif;
   --f-body: "Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius: 4px;
-  color-scheme: dark;
+  color-scheme: only dark;
 }
 body { transition: background-color .4s ease, color .4s ease; }
 
