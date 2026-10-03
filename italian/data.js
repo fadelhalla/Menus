@@ -101,10 +101,10 @@ window.RESTAURANT = {
   upsellTitle: 'To finish the meal',
   upsell: ['tiramisu', 'focaccia', 'espresso', 'limoncello'],
   icons: ICONS,
-  defaultSkin: 'dolce',
+  defaultSkin: 'nonna',
   skins: [
-    { id: 'dolce', name: 'La Dolce Vita', about: 'The Riviera in 1962: Vespa mint, Campari red and a striped beach awning.', colors: ['#8ED1BC', '#E8503F', '#FFFFFF'] },
     { id: 'nonna', name: 'Da Nonna', about: 'A neighborhood trattoria: red gingham tablecloth, basil green, handwritten menu.', colors: ['#C8102E', '#FFFFFF', '#2F7D32'] },
+    { id: 'dolce', name: 'La Dolce Vita', about: 'The Riviera in 1962: Vespa mint, Campari red and a striped beach awning.', colors: ['#8ED1BC', '#E8503F', '#FFFFFF'] },
     { id: 'notte', name: 'Notte', about: 'A candlelit wine bar: dark wood, cream lettering and gold.', colors: ['#120B0A', '#E0AE4C', '#F2E6D4'] },
   ],
   iconPaths: ICON_PATHS,

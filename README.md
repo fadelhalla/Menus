@@ -30,7 +30,7 @@ python3 -m http.server 8000
 ## Mattarello extras
 
 - **Three house styles** with a picker (the round swatch button in the header): *La Dolce Vita* (Riviera 1960s, mint and Campari red, striped awning),
-  *Da Nonna* (red gingham trattoria, handwritten menu card) and *Notte* (candlelit wine bar, dark and gold). The menu always opens in `defaultSkin` (La Dolce Vita, set in `italian/data.js`),
+  *Da Nonna* (red gingham trattoria, handwritten menu card) and *Notte* (candlelit wine bar, dark and gold). The menu always opens in `defaultSkin` (Da Nonna, set in `italian/data.js`),
   or remove `skins` to hide the picker once you've chosen.
 
 - **Build your bowl**: a 4-step builder (shape → sauce → toppings → finish, plus portion size) with a live plate that fills as you choose:
