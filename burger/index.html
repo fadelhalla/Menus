@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Brick &amp; Bun</title>
+  <meta name="description" content="Smash burger menu: order at your table, for pickup or for delivery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Figtree:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    /* Diner flat-top: mustard brand band, grill-black ink, ketchup accent. */
+    :root {
+      --bg: #FFFDF8;
+      --surface: #FFFFFF;
+      --ink: #1C1712;
+      --muted: #6E6355;
+      --line: #E8DFD0;
+      --brand: #FFC23D;
+      --brand-ink: #1C1712;
+      --accent: #D62F1F;
+      --accent-ink: #FFFFFF;
+      --good: #2E8540;
+      --veg: #3C7D2F;
+      --hot: #C8321E;
+      --f-display: "Bowlby One", "Arial Black", Impact, sans-serif;
+      --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+      --radius: 18px;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #16120E; --surface: #211B15; --ink: #F6EFE4; --muted: #B3A592; --line: #3A3027;
+        --brand: #F5B82E; --brand-ink: #1C1712; --accent: #F0503C; --accent-ink: #FFFFFF;
+        --good: #5BBE6E; --veg: #7CC46A; --hot: #FF6E57;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #16120E; --surface: #211B15; --ink: #F6EFE4; --muted: #B3A592; --line: #3A3027;
+      --brand: #F5B82E; --brand-ink: #1C1712; --accent: #F0503C; --accent-ink: #FFFFFF;
+      --good: #5BBE6E; --veg: #7CC46A; --hot: #FF6E57;
+      color-scheme: dark;
+    }
+  </style>
+  <link rel="stylesheet" href="../shared/menu.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script src="data.js"></script>
+  <script src="../shared/menu.js"></script>
+</body>
+</html>
