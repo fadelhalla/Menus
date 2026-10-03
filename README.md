@@ -5,7 +5,7 @@ Plain HTML/CSS/JS, no build step, so it can be hosted anywhere (GitHub Pages, Ne
 
 | Restaurant | Folder | Status |
 |---|---|---|
-| Brick & Bun (smash burgers) | [`burger/`](burger/) | ✅ |
+| Brick & Bun (burgers) | [`burger/`](burger/) | ✅ |
 | Mattarello (fresh pasta bar) | [`italian/`](italian/) | ✅ |
 
 ## Run it

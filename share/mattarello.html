@@ -1190,7 +1190,7 @@ window.RESTAURANT.builder = (host, api) => {
     const delivery = state.mode === 'delivery' && subtotal > 0
       ? (R.freeDeliveryOver && subtotal >= R.freeDeliveryOver ? 0 : R.deliveryFee || 0) : 0;
     const tax = net * (R.taxRate || 0);
-    const tip = state.mode === 'dinein' ? 0 : net * state.tip;
+    const tip = state.mode === 'dinein' || R.tips === false ? 0 : net * state.tip;
     const cover = state.mode === 'dinein' && R.cover && !state.rounds.length && subtotal > 0 ? R.cover.price * state.guests : 0;
     return { subtotal, discount, delivery, tax, tip, cover, total: net + delivery + tax + tip + cover };
   }
@@ -1655,7 +1655,7 @@ window.RESTAURANT.builder = (host, api) => {
           ${state.mode === 'dinein' && R.cover && !state.rounds.length ? `<div class="field"><span class="block-title">Guests at the table</span>
             <div class="guests-row"><div class="stepper sm"><button type="button" data-guests="-1" aria-label="One guest less">−</button><output>${state.guests}</output><button type="button" data-guests="1" aria-label="One guest more">+</button></div>
             <span class="hint">${esc(R.cover.label)}: ${money(R.cover.price)} per person</span></div></div>` : ''}
-          ${state.mode && state.mode !== 'dinein' ? `<div class="field"><span class="block-title">Tip the crew</span>
+          ${state.mode && state.mode !== 'dinein' && R.tips !== false ? `<div class="field"><span class="block-title">${esc(R.tipTitle || 'Tip')}</span>
             <div class="seg" role="group" aria-label="Tip">${[0, 0.1, 0.15, 0.2].map((p) => `<button type="button" data-tip="${p}" aria-pressed="${state.tip === p}">${p ? `${p * 100}%` : 'No tip'}</button>`).join('')}</div></div>` : ''}
           ${R.promos ? `<div class="field"><label class="block-title" for="promo-input">Promo code</label>
             <div class="promo"><input id="promo-input" placeholder="${esc(R.promoHint || 'Code')}" value="${esc(state.promo || '')}" autocomplete="off"><button type="button" id="promo-apply">${state.promo ? 'Remove' : 'Apply'}</button></div>
