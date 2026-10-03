@@ -60,6 +60,7 @@
     tip: 0.15,
     promo: null,
     rounds: store.get('rounds', []), // dine-in orders sent this visit
+    guests: store.get('guests', 2),
     editing: null, // cart line key being edited
   };
   if (!enabledModes.includes(state.mode)) state.mode = null;
@@ -69,6 +70,7 @@
     store.set('mode', state.mode);
     store.set('table', state.table);
     store.set('rounds', state.rounds);
+    store.set('guests', state.guests);
   };
 
   function unitPrice(item, choices) {
@@ -112,7 +114,8 @@
       ? (R.freeDeliveryOver && subtotal >= R.freeDeliveryOver ? 0 : R.deliveryFee || 0) : 0;
     const tax = net * (R.taxRate || 0);
     const tip = state.mode === 'dinein' ? 0 : net * state.tip;
-    return { subtotal, discount, delivery, tax, tip, total: net + delivery + tax + tip };
+    const cover = state.mode === 'dinein' && R.cover && !state.rounds.length && subtotal > 0 ? R.cover.price * state.guests : 0;
+    return { subtotal, discount, delivery, tax, tip, cover, total: net + delivery + tax + tip + cover };
   }
 
   // ---------- shell ----------
@@ -124,10 +127,13 @@
       </div>
     </header>
     <section class="hero">
-      <div class="wrap">
-        <h2>${esc(R.tagline)}</h2>
-        <p>${esc(R.intro || '')}</p>
-        <div class="facts">${(R.facts || []).map((f) => `<span>${esc(f)}</span>`).join('')}</div>
+      <div class="wrap${R.heroArt ? ' has-art' : ''}">
+        <div class="hero-copy">
+          <h2>${R.taglineHtml || esc(R.tagline)}</h2>
+          <p>${esc(R.intro || '')}</p>
+          <div class="facts">${(R.facts || []).map((f) => `<span>${esc(f)}</span>`).join('')}</div>
+        </div>
+        ${R.heroArt ? `<div class="hero-art" aria-hidden="true">${R.heroArt}</div>` : ''}
       </div>
     </section>
     <div class="table-bar" id="table-bar" hidden></div>
@@ -248,7 +254,10 @@
     return item.name.toLowerCase().includes(q) || (item.desc || '').toLowerCase().includes(q);
   }
 
-  const tileHtml = (item) => `<div class="tile" style="--tile:${esc(item.tile || 'var(--brand)')}" aria-hidden="true">${item.img ? `<img src="${esc(item.img)}" alt="" loading="lazy">` : esc(item.emoji || '')}</div>`;
+  const tileHtml = (item) => {
+    const art = item.img ? `<img src="${esc(item.img)}" alt="" loading="lazy">` : (item.icon && R.icons?.[item.icon]) || esc(item.emoji || '');
+    return `<div class="tile${item.icon ? ' has-icon' : ''}" style="--tile:${esc(item.tile || 'var(--brand)')}" aria-hidden="true">${art}</div>`;
+  };
   const tagsHtml = (item) => (item.tags || []).map((t) => `<span class="tag ${esc(t)}">${esc(TAGS[t] || t)}</span>`).join('');
 
   function cardHtml(item) {
@@ -258,7 +267,7 @@
       <div class="card-body">
         <h4>${esc(item.name)}</h4>
         <p class="desc">${esc(item.desc)}</p>
-        <div class="meta"><span class="price">${item.soldOut ? 'Sold out' : money(item.price)}</span>${tagsHtml(item)}</div>
+        <div class="meta"><span class="price">${item.soldOut ? 'Sold out' : money(item.price)}</span>${tagsHtml(item)}${item.left && !item.soldOut ? `<span class="tag left">Only ${item.left} left today</span>` : ''}</div>
       </div>
       ${tileHtml(item)}
       ${q ? `<span class="in-cart" aria-label="${q} in your order">${q}</span>` : ''}
@@ -266,15 +275,66 @@
     </article>`;
   }
 
+  let builderEl = null;
   function renderMenu() {
-    const secs = R.categories.map((c) => ({ ...c, list: c.items.map((i) => items.get(i.id)).filter(matches) })).filter((c) => c.list.length);
+    const browsing = !state.query && !state.filters.size;
+    const secs = R.categories
+      .map((c) => ({ ...c, list: c.type === 'builder' ? (browsing ? c.items : []) : c.items.map((i) => items.get(i.id)).filter(matches) }))
+      .filter((c) => c.list.length);
     $('#cats').innerHTML = secs.map((c, i) => `<button type="button" class="cat" data-cat="${esc(c.id)}" aria-current="${i === 0}">${esc(c.name)}</button>`).join('');
     $('#menu').innerHTML = secs.length
       ? secs.map((c) => `<section class="section" id="sec-${esc(c.id)}" data-sec="${esc(c.id)}">
-          <h3>${esc(c.name)}</h3>${c.blurb ? `<p>${esc(c.blurb)}</p>` : ''}
-          <div class="grid">${c.list.map(cardHtml).join('')}</div></section>`).join('')
+          ${c.kicker ? `<span class="kicker">${esc(c.kicker)}</span>` : ''}<h3>${esc(c.name)}</h3>${c.blurb ? `<p>${esc(c.blurb)}</p>` : ''}
+          ${c.type === 'builder' ? '<div data-builder-slot></div>' : `<div class="grid">${c.list.map(cardHtml).join('')}</div>`}</section>`).join('')
       : `<div class="empty"><strong>Nothing matches that</strong>Try another word or clear the filters.</div>`;
+    const slot = $('[data-builder-slot]');
+    if (slot && R.builder) {
+      if (!builderEl) { builderEl = document.createElement('div'); builderEl.className = 'builder-host'; R.builder(builderEl, api); }
+      slot.replaceWith(builderEl); // same node every time, so the builder keeps its state
+    }
     observeSections();
+  }
+
+  // Update the "in your order" counters without re-rendering the menu.
+  function updateBadges() {
+    $$('.card[data-id]').forEach((card) => {
+      const q = qtyOf(card.dataset.id);
+      let b = $('.in-cart', card);
+      if (!q) { b?.remove(); return; }
+      if (!b) { b = document.createElement('span'); b.className = 'in-cart'; card.append(b); }
+      if (b.textContent !== String(q)) { b.textContent = q; b.setAttribute('aria-label', `${q} in your order`); b.animate?.([{ transform: 'scale(1.6)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' }); }
+    });
+    builderEl?.dispatchEvent(new CustomEvent('cartchange'));
+  }
+
+  // Fly a copy of the dish tile into the cart bar.
+  let lastTile = null;
+  document.addEventListener('pointerdown', (e) => {
+    const src = e.target.closest('[data-fly]');
+    const host = e.target.closest('.card, .mini, dialog.sheet');
+    lastTile = src ? $(src.dataset.fly) || src : host ? $('.tile', host) : null;
+  }, true);
+  function fly(src) {
+    const target = $('#open-cart .count');
+    if (!src || !target || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const a = src.getBoundingClientRect();
+    const b = target.getBoundingClientRect();
+    if (!a.width || a.bottom < 0 || a.top > innerHeight) return;
+    const ghost = src.cloneNode(true);
+    ghost.removeAttribute('id');
+    Object.assign(ghost.style, { position: 'fixed', left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px`, margin: 0, zIndex: 100, pointerEvents: 'none' });
+    document.body.append(ghost);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+    const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    ghost.animate([
+      { transform: 'translate(0, 0) scale(1) rotate(0)', opacity: 1 },
+      { transform: `translate(${dx * 0.45}px, ${dy * 0.45 - 90}px) scale(.55) rotate(-12deg)`, opacity: 1, offset: 0.5 },
+      { transform: `translate(${dx}px, ${dy}px) scale(.1) rotate(8deg)`, opacity: 0.4 },
+    ], { duration: 700, easing: 'cubic-bezier(.45, 0, .55, 1)' }).finished.then(() => {
+      ghost.remove();
+      const bar = $('#cartbar');
+      bar.classList.remove('bump'); void bar.offsetWidth; bar.classList.add('bump');
+    });
   }
 
   let observer;
@@ -344,8 +404,12 @@
           </fieldset>`).join('')}
         <div class="field">
           <label for="item-note">Notes for the kitchen <span class="opt">(optional)</span></label>
-          <textarea id="item-note" maxlength="140" placeholder="Allergies, sauce on the side…">${esc(line?.note || '')}</textarea>
+          <textarea id="item-note" maxlength="140" placeholder="${esc(R.notePlaceholder || 'Allergies, sauce on the side…')}">${esc(line?.note || '')}</textarea>
         </div>
+        ${item.pair && items.get(item.pair) ? (() => { const p = items.get(item.pair); return `
+          <div class="pair"><span class="block-title">${esc(R.pairTitle || 'Pairs well with')}</span>
+            <button type="button" class="mini pair-btn" data-pair="${esc(p.id)}">${tileHtml(p)}<span><b>${esc(p.name)}</b><small>${p.pairNote ? `${esc(p.pairNote)} ` : ''}${money(unitPrice(p, defaultChoices(p)))}</small></span><span class="pair-add">Add</span></button>
+          </div>`; })() : ''}
       </form>
       <div class="sheet-foot">
         <div class="stepper" aria-label="Quantity">
@@ -381,6 +445,13 @@
       if (e.target === sheets.item || e.target.closest('[data-close]')) return sheets.item.close();
       const st = e.target.closest('[data-step]');
       if (st) { qty = Math.max(1, Math.min(20, qty + Number(st.dataset.step))); refresh(); }
+      const pr = e.target.closest('[data-pair]');
+      if (pr && !pr.disabled) {
+        const p = items.get(pr.dataset.pair);
+        addToCart(p, defaultChoices(p), 1, '', true, $('.tile', pr));
+        pr.disabled = true;
+        $('.pair-add', pr).textContent = 'Added ✓';
+      }
       if (e.target.closest('#item-add')) {
         read();
         const note = $('#item-note').value.trim();
@@ -394,12 +465,14 @@
     open('item');
   }
 
-  function addToCart(item, choices, qty, note, silent = false) {
+  function addToCart(item, choices, qty, note, silent = false, src = lastTile) {
     const key = lineKey(item.id, choices, note);
     const existing = state.cart.find((l) => l.key === key);
     if (existing) existing.qty += qty;
     else state.cart.push({ key, id: item.id, qty, choices: structuredClone(choices), note, unit: unitPrice(item, choices) });
-    save(); renderMenu(); renderCartBar(true);
+    save(); updateBadges(); renderCartBar();
+    fly(src);
+    lastTile = null;
     if (!silent) toast(`Added ${qty > 1 ? `${qty} × ` : ''}${item.name}`);
   }
 
@@ -420,9 +493,10 @@
       ${t.discount ? row(`Promo ${esc(state.promo)}`, `−${money(t.discount)}`, 'save') : ''}
       ${state.mode === 'delivery' ? row('Delivery', t.delivery ? money(t.delivery) : 'Free') : ''}
       ${R.taxRate ? row(`Tax (${(R.taxRate * 100).toFixed(R.taxRate * 100 % 1 ? 2 : 0)}%)`, money(t.tax)) : ''}
+      ${t.cover ? row(`${esc(R.cover.label)} × ${state.guests}`, money(t.cover)) : ''}
       ${state.mode !== 'dinein' && t.tip ? row('Tip', money(t.tip)) : ''}
       ${row('Total', money(t.total), 'grand')}
-    </dl>`;
+    </dl>${R.taxNote ? `<p class="hint">${esc(R.taxNote)}</p>` : ''}`;
   }
 
   function renderCart() {
@@ -449,6 +523,9 @@
         ${upsell.length && state.cart.length ? `<div class="upsell"><h5>${esc(R.upsellTitle || 'Goes well with')}</h5><div class="upsell-row">${upsell.map((i) => `
           <button type="button" class="mini" data-up="${esc(i.id)}">${tileHtml(i)}<span><b>${esc(i.name)}</b><small>+ ${money(i.price)}</small></span></button>`).join('')}</div></div>` : ''}
         ${state.cart.length ? `
+          ${state.mode === 'dinein' && R.cover && !state.rounds.length ? `<div class="field"><span class="block-title">Guests at the table</span>
+            <div class="guests-row"><div class="stepper sm"><button type="button" data-guests="-1" aria-label="One guest less">−</button><output>${state.guests}</output><button type="button" data-guests="1" aria-label="One guest more">+</button></div>
+            <span class="hint">${esc(R.cover.label)}: ${money(R.cover.price)} per person</span></div></div>` : ''}
           ${state.mode && state.mode !== 'dinein' ? `<div class="field"><span class="block-title">Tip the crew</span>
             <div class="seg" role="group" aria-label="Tip">${[0, 0.1, 0.15, 0.2].map((p) => `<button type="button" data-tip="${p}" aria-pressed="${state.tip === p}">${p ? `${p * 100}%` : 'No tip'}</button>`).join('')}</div></div>` : ''}
           ${R.promos ? `<div class="field"><label class="block-title" for="promo-input">Promo code</label>
@@ -492,6 +569,8 @@
     }
     const tip = t.closest('[data-tip]');
     if (tip) state.tip = Number(tip.dataset.tip);
+    const gu = t.closest('[data-guests]');
+    if (gu) state.guests = Math.max(1, Math.min(20, state.guests + Number(gu.dataset.guests)));
     if (t.closest('#promo-apply')) {
       if (state.promo) state.promo = null;
       else {
@@ -506,8 +585,8 @@
       if (!state.mode) { renderModeSheet(false); open('mode'); return; }
       renderCheckout(); open('checkout'); return;
     }
-    if (inc || dec || up || sm || tip || t.closest('#promo-apply')) {
-      save(); renderCart(); renderCartBar(); renderMenu(); renderHeader();
+    if (inc || dec || up || sm || tip || gu || t.closest('#promo-apply')) {
+      save(); renderCart(); renderCartBar(); updateBadges(); renderHeader();
     }
   });
 
@@ -539,7 +618,9 @@
           <div class="two">
             <div class="field"><label for="co-table">Table number</label><input id="co-table" name="table" required inputmode="numeric" value="${esc(state.table)}" placeholder="e.g. 12"></div>
             <div class="field"><label for="co-name">Your name <span class="opt">(optional)</span></label><input id="co-name" name="name" autocomplete="given-name" value="${esc(c.name || '')}" placeholder="So we know who ordered"></div>
-          </div>` : `
+          </div>
+          ${R.courseTiming ? `<div class="field"><label for="co-timing">When should we bring it?</label>
+            <select id="co-timing" name="timing">${R.courseTiming.map((o) => `<option>${esc(o)}</option>`).join('')}</select></div>` : ''}` : `
           <div class="two">
             <div class="field"><label for="co-name">Name</label><input id="co-name" name="name" required autocomplete="name" value="${esc(c.name || '')}" placeholder="Name for the order"></div>
             <div class="field"><label for="co-phone">Phone</label><input id="co-phone" name="phone" required type="tel" autocomplete="tel" value="${esc(c.phone || '')}" placeholder="We text you when it’s ready"></div>
@@ -599,6 +680,7 @@
       when: data.when || 'asap',
       payment: data.pay,
       note: data.note || '',
+      timing: data.timing || undefined,
       promo: state.promo,
       lines: state.cart.map((l) => {
         const item = items.get(l.id);
@@ -629,7 +711,7 @@
     state.cart = [];
     state.promo = null;
     save();
-    renderMenu(); renderCartBar(); renderHeader();
+    updateBadges(); renderCartBar(); renderHeader();
     showConfirmation(order);
   });
 
@@ -650,6 +732,7 @@
           <div class="big">#${esc(o.number)}</div>
           <div class="tl"><span>${esc(MODES[o.mode].label.toUpperCase())}${o.table ? ` · TABLE ${esc(o.table)}` : ''}</span><span>${when ? esc(when) : ''}</span></div>
           ${o.customer.name ? `<div>${esc(o.customer.name)}</div>` : ''}
+          ${o.timing ? `<div>${esc(o.timing.toUpperCase())}</div>` : ''}
           <hr>
           ${o.lines.map((l) => `<div class="tl"><span>${l.qty}× ${esc(l.name)}</span><span>${money(l.unit * l.qty)}</span></div>
             ${l.options.map((x) => `<div class="sub">${esc(x)}</div>`).join('')}${l.note ? `<div class="sub">“${esc(l.note)}”</div>` : ''}`).join('')}
@@ -674,6 +757,10 @@
   }
   sheets.done.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) sheets.done.close(); });
   sheets.done.addEventListener('close', () => clearTimeout(progressTimer));
+
+  // ---------- public API (used by plug-ins such as a custom builder) ----------
+  const api = { R, items, state, money, esc, toast, addToCart, openItem, defaultChoices, unitPrice, qtyOf, tileHtml };
+  window.MenuAPI = api;
 
   // ---------- boot ----------
   renderHeader();

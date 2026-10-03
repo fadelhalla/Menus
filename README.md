@@ -6,7 +6,7 @@ Plain HTML/CSS/JS, no build step, so it can be hosted anywhere (GitHub Pages, Ne
 | Restaurant | Folder | Status |
 |---|---|---|
 | Brick & Bun (smash burgers) | [`burger/`](burger/) | ✅ |
-| Italian restaurant | `italian/` | next |
+| Mattarello (fresh pasta bar) | [`italian/`](italian/) | ✅ |
 
 ## Run it
 
@@ -27,6 +27,16 @@ python3 -m http.server 8000
 - Dine-in extras: **Call a server** and **Ask for the bill**, plus several rounds of orders per visit.
 - The cart, chosen mode and contact details are remembered on the guest's device.
 
+## Mattarello extras
+
+- **Build your bowl**: a 4-step builder (shape → sauce → toppings → finish, plus portion size) with a live plate that fills as you choose:
+  the sauce changes color, pasta pieces pop in, toppings drop onto the plate, cheese snows on top. It also flags chef's classic matches,
+  shows vegetarian / gluten-free / spicy as you go, and has a "Surprise me" button.
+- Sommelier pairings: each pasta suggests a wine you can add by the glass in one tap.
+- Coperto (cover charge per guest) for dine-in, and course timing ("antipasti first, then pasta").
+- Motion throughout: the hero plate draws itself, cards rise in as you scroll, dishes fly into the cart. All motion is turned off for
+  people who set "reduce motion" on their device.
+
 ## Structure
 
 ```
@@ -34,6 +44,7 @@ shared/menu.js    the engine: rendering, cart, checkout, order flow (shared by e
 shared/menu.css   layout and components, styled through theme tokens
 burger/data.js    Brick & Bun: dishes, prices, options, fees, promo codes
 burger/index.html Brick & Bun: theme (colors, fonts) + loads the engine
+italian/          Mattarello: data.js, style.css (theme), hero.js (plate illustration), builder.js (Build your bowl)
 ```
 
 To add a restaurant, copy `burger/`, change the colors and fonts in `index.html`, and rewrite `data.js`.
