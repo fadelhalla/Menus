@@ -78,6 +78,59 @@ window.RESTAURANT = {
 
   categories: [
     {
+      id: 'build', name: 'Build your burger', type: 'builder',
+      blurb: 'Choose each layer and watch your burger come together.',
+      items: [
+        {
+          id: 'custom', name: 'Your burger', price: 9, emoji: '🍔', tile: '#F4B740',
+          desc: 'Built your way.',
+          options: [
+            { id: 'bun', name: 'Bun', type: 'single', required: true, choices: [
+              { id: 'sesame', name: 'Sesame bun' },
+              { id: 'classic', name: 'Classic bun' },
+              { id: 'brioche', name: 'Brioche' },
+              { id: 'gf', name: 'Gluten-free bun', price: 1.5 },
+              { id: 'lettuce', name: 'Lettuce wrap' },
+            ] },
+            { id: 'patty', name: 'Patty', type: 'single', required: true, choices: [
+              { id: 'beef', name: 'Beef' },
+              { id: 'double', name: 'Double beef', price: 3 },
+              { id: 'chicken', name: 'Crispy chicken', price: 0.5 },
+              { id: 'veggie', name: 'Veggie', price: 1 },
+              { id: 'halloumi', name: 'Halloumi', price: 1 },
+            ] },
+            { id: 'cheese', name: 'Cheese', type: 'single', required: true, choices: [
+              { id: 'cheddar', name: 'Cheddar' },
+              { id: 'swiss', name: 'Swiss', price: 0.5 },
+              { id: 'pepperjack', name: 'Pepper jack', price: 0.5 },
+              { id: 'vegan', name: 'Vegan cheese', price: 0.5 },
+              { id: 'none', name: 'No cheese' },
+            ] },
+            { id: 'toppings', name: 'Toppings', type: 'multi', max: 6, choices: [
+              { id: 'lettuce', name: 'Lettuce', default: true },
+              { id: 'tomato', name: 'Tomato', default: true },
+              { id: 'onion', name: 'Onion' },
+              { id: 'pickles', name: 'Pickles' },
+              { id: 'bacon', name: 'Bacon', price: 2 },
+              { id: 'egg', name: 'Egg', price: 1.5 },
+              { id: 'avocado', name: 'Avocado', price: 2 },
+              { id: 'jalapeno', name: 'Jalapeños', price: 1 },
+              { id: 'caramelized', name: 'Caramelized onions', price: 1 },
+            ] },
+            { id: 'sauce', name: 'Sauce', type: 'single', required: true, choices: [
+              { id: 'house', name: 'House sauce' },
+              { id: 'ketchup', name: 'Ketchup' },
+              { id: 'mayo', name: 'Mayo' },
+              { id: 'bbq', name: 'BBQ' },
+              { id: 'spicy', name: 'Spicy mayo' },
+              { id: 'none', name: 'No sauce' },
+            ] },
+            MEAL,
+          ],
+        },
+      ],
+    },
+    {
       id: 'burgers', name: 'Burgers',
       items: [
         {

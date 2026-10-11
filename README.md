@@ -27,6 +27,11 @@ python3 -m http.server 8000
 - Dine-in extras: **Call a server** and **Ask for the bill**, plus several rounds of orders per visit.
 - The cart, chosen mode and contact details are remembered on the guest's device.
 
+## Brick & Bun extras
+
+- **Build your burger**: bun → patty → cheese → toppings → sauce, with each layer dropping onto a burger that stacks up live
+  (`burger/builder.js`, styles in `burger/style.css`). On phones the burger stays pinned at the top while you choose.
+
 ## Mattarello extras
 
 - **Three house styles** with a picker (the round swatch button in the header): *La Dolce Vita* (Riviera 1960s, mint and Campari red, striped awning),
